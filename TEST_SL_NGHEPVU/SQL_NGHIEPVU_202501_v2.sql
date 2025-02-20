@@ -151,24 +151,7 @@ commit;
 	;
 	commit ;
 	
- /* ---khong ghi nhận------------ ONEBSS - DAT COC MOI ------------ 
--- theo MA_KH
--- lo?i tr? trùng ONEBSS - DAT COC MOI voi ONEBSS - LAPDATMOI, GHTT
-*/
-	insert into ttkd_bsc.ct_bsc_nghiepvu (ma_kh, NGAY_DKY_VI, TEN_LOAIHD, LOAI, KHACHHANG_ID, THANG, DONVI, MA_NV, TEN_NV, TEN_TO, TEN_PB, TEN_VTCV, MA_VTCV, MA_TO, MA_PB)
-		with tbl as
-            ( select THANG, MA_KH, TEN_LOAIHD, KHACHHANG_ID, MANV_RA_PCT, NGAY_YC
-            		 , row_number() over(partition by MA_KH, nhanvien_id order by rowid) rnk
-              from tuyenngo.sbh_202501_CT
-			  where loaihd_id = 31 and tthd_id = 6 and MANV_RA_PCT is not null
-			)
-		select MA_KH, NGAY_YC, upper(bo_dau(TEN_LOAIHD)) TEN_LOAIHD, 'ONEBSS' loai , KHACHHANG_ID
-               , nv.thang, nv.donvi, nv.ma_nv, nv.ten_nv, nv.ten_to, nv.ten_pb, nv.ten_vtcv, nv.ma_vtcv, nv.ma_to, nv.ma_pb
-		from tbl a
-            join ttkd_bsc.nhanvien nv on a.MANV_RA_PCT = nv.ma_nv and a.thang = nv.thang and nv.donvi = 'TTKD'
-		where rnk = 1
-	;
-/* ----Nghiep vu Khoan----------- ONEBSS - TIEP NHAN KHAO SAT DAT MOI ------------ 
+ /* ----Nghiep vu Khoan----------- ONEBSS - TIEP NHAN KHAO SAT DAT MOI ------------ 
 -- theo MA_KH
 -- lo?i tr? trùng ONEBSS - TIEP NHAN KHAO SAT DAT MOI voi ONEBSS - LAPDATMOI
 -- update thêm  c?t MA_KH
@@ -355,7 +338,8 @@ commit;
                         join ttkd_bsc.nhanvien nv on a.MANV_RA_PCT = nv.ma_nv and a.thang = nv.thang and nv.donvi = 'TTKD'
             where rnk = 1
     ;
-/* -----Không ghi nhận---------- ONEBSS - THAY DOI DAT COC ------------ 
+	
+/* ----- Không ghi nhận---------- ONEBSS - THAY DOI DAT COC ------------ 
 -- Nghiem thu
 -- theo thue bao
 -- lo?i tr? trùng trong các nghi?p khác*/
@@ -372,6 +356,51 @@ commit;
                     join ttkd_bsc.nhanvien nv on a.MANV_RA_PCT = nv.ma_nv and a.thang = nv.thang and nv.donvi = 'TTKD'
         where rnk = 1
     ;
+/* ----- không ghi nhận------------ ONEBSS - DAT COC MOI ------------ 
+-- theo MA_KH
+-- lo?i tr? trùng ONEBSS - DAT COC MOI voi ONEBSS - LAPDATMOI, GHTT
+*/
+	insert into ttkd_bsc.ct_bsc_nghiepvu (ma_kh, NGAY_DKY_VI, TEN_LOAIHD, LOAI, KHACHHANG_ID, THANG, DONVI, MA_NV, TEN_NV, TEN_TO, TEN_PB, TEN_VTCV, MA_VTCV, MA_TO, MA_PB)
+		with tbl as
+            ( select THANG, MA_KH, TEN_LOAIHD, KHACHHANG_ID, MANV_RA_PCT, NGAY_YC
+            		 , row_number() over(partition by MA_KH, nhanvien_id order by rowid) rnk
+              from tuyenngo.sbh_202501_CT
+			  where loaihd_id = 31 and tthd_id = 6 and MANV_RA_PCT is not null
+			)
+		select MA_KH, NGAY_YC, upper(bo_dau(TEN_LOAIHD)) TEN_LOAIHD, 'ONEBSS' loai , KHACHHANG_ID
+               , nv.thang, nv.donvi, nv.ma_nv, nv.ten_nv, nv.ten_to, nv.ten_pb, nv.ten_vtcv, nv.ma_vtcv, nv.ma_to, nv.ma_pb
+		from tbl a
+            join ttkd_bsc.nhanvien nv on a.MANV_RA_PCT = nv.ma_nv and a.thang = nv.thang and nv.donvi = 'TTKD'
+		where rnk = 1
+	;
+/* ----- không ghi nhận------------ ONEBSS - KY LAI HOP DONG GOC ----- */
+    insert into ttkd_bsc.ct_bsc_nghiepvu (ma_tb, ma_kh, NGAY_DKY_VI, TEN_LOAIHD, LOAI, KHACHHANG_ID, thuebao_id, THANG, DONVI, MA_NV, TEN_NV, TEN_TO, TEN_PB, TEN_VTCV, MA_VTCV, MA_TO, MA_PB)
+        with tbl as(select a.THANG, ma_tb, MA_KH, TEN_LOAIHD, thuebao_id, KHACHHANG_ID, MANV_RA_PCT, NGAY_YC
+                                , row_number() over(partition by ma_tb, a.nhanvien_id order by NGAY_YC) rnk
+                        from tuyenngo.sbh_202501_CT a
+                                        join ttkd_bsc.nhanvien nv on a.nhanvien_id = nv.nhanvien_id and nv.thang = 202501
+                        where loaihd_id = 24 and tthd_id = 6 and MANV_RA_PCT is not null
+                    )
+        select ma_tb, MA_KH, ngay_yc, upper(bo_dau(TEN_LOAIHD)) TEN_LOAIHD, 'ONEBSS' loai , KHACHHANG_ID, thuebao_id
+               , nv.thang, nv.donvi, nv.ma_nv, nv.ten_nv, nv.ten_to, nv.ten_pb, nv.ten_vtcv, nv.ma_vtcv, nv.ma_to, nv.ma_pb
+        from tbl a
+            join ttkd_bsc.nhanvien nv on a.MANV_RA_PCT = nv.ma_nv and a.thang = nv.thang and nv.donvi = 'TTKD'
+        where rnk = 1;
+/* ----- không ghi nhận------------ ONEBSS - THAY THE/THU HOI/CAP BO SUNG VAT TU ----- */
+    insert into ttkd_bsc.ct_bsc_nghiepvu (ma_tb, ma_kh, NGAY_DKY_VI, TEN_LOAIHD, LOAI, KHACHHANG_ID, thuebao_id, THANG, DONVI, MA_NV, TEN_NV, TEN_TO, TEN_PB, TEN_VTCV, MA_VTCV, MA_TO, MA_PB)
+        with tbl as(select a.THANG, ma_tb, MA_KH, TEN_LOAIHD, thuebao_id, KHACHHANG_ID, MANV_RA_PCT, NGAY_YC
+                                , row_number() over(partition by ma_tb, a.nhanvien_id order by NGAY_YC) rnk
+                        from tuyenngo.sbh_202501_CT a
+                                        join ttkd_bsc.nhanvien nv on a.nhanvien_id = nv.nhanvien_id and nv.thang = 202501
+                        where loaihd_id = 13 and tthd_id = 6 and MANV_RA_PCT is not null
+                    )
+        select ma_tb, MA_KH, ngay_yc, upper(bo_dau(TEN_LOAIHD)) TEN_LOAIHD, 'ONEBSS' loai , KHACHHANG_ID, thuebao_id
+               , nv.thang, nv.donvi, nv.ma_nv, nv.ten_nv, nv.ten_to, nv.ten_pb, nv.ten_vtcv, nv.ma_vtcv, nv.ma_to, nv.ma_pb
+        from tbl a
+            join ttkd_bsc.nhanvien nv on a.MANV_RA_PCT = nv.ma_nv and a.thang = nv.thang and nv.donvi = 'TTKD'
+        where rnk = 1;
+commit;
+
 /* -----HauMai-Muc 16---------- ONEBSS - THAY DOI DICH VU ------------ 
 -- Nghiem thu
 -- theo thue bao
@@ -905,13 +934,6 @@ delete from ttkd_bsc.ct_bsc_nghiepvu where ten_loaihd = 'DONG TRUOC GOI CUOC' an
             where TEN_LOAIHD = 'CNTTTB' and 'CCBS' = loai and a.thang = 202501
                 and exists (select * from  tuyenngo.sbh_vnp_202501_ct where ten_loaihd = 'CAP NHAT DB' and a.thang = thang and ma_tb = a.ma_tb)
     ;
-    --loại trừ trùng ONEBSS - THAYDOIDATCOC voi ONEBSS - NGHIEPVUKHAC
-    delete from ttkd_bsc.ct_bsc_nghiepvu a
---			select * from ttkd_bsc.ct_bsc_nghiepvu a
-            where TEN_LOAIHD = 'THAY DOI DAT COC' and 'ONEBSS' = loai and a.thang = 202501
-                and exists (select distinct TEN_LOAIHD, loai from  ttkd_bsc.ct_bsc_nghiepvu
-                                    where ten_loaihd != 'THAY DOI DAT COC' and 'ONEBSS' = loai and ma_tb = a.ma_tb and thang = a.thang)
-    ;
     --loại trừ trùng ONEBSS - THAYDOITHONGTIN-GIAHANDICHVUCNTT voi ONEBSS - LAPDATMOI
     delete from ttkd_bsc.ct_bsc_nghiepvu a
 --			select * from ttkd_bsc.ct_bsc_nghiepvu a
@@ -941,7 +963,30 @@ delete from ttkd_bsc.ct_bsc_nghiepvu where ten_loaihd = 'DONG TRUOC GOI CUOC' an
                 and exists (select * from  ttkd_bsc.ct_bsc_nghiepvu
                                     where ten_loaihd = 'LAP DAT MOI' and 'ONEBSS' = loai and ma_kh = a.ma_kh and thang = a.thang)
     ;
-    
+	
+    --loại trừ trùng ONEBSS - THAY DOI DAT COC voi ONEBSS - NGHIEPVUKHAC
+    delete from ttkd_bsc.ct_bsc_nghiepvu a
+--			select * from ttkd_bsc.ct_bsc_nghiepvu a
+            where TEN_LOAIHD = 'THAY DOI DAT COC' and 'ONEBSS' = loai and a.thang = 202501
+                and exists (select distinct TEN_LOAIHD, loai from  ttkd_bsc.ct_bsc_nghiepvu
+                                    where ten_loaihd != 'THAY DOI DAT COC' and 'ONEBSS' = loai and ma_tb = a.ma_tb and thang = a.thang)
+    ;
+	
+	/* ----- Nghiệp vụ không ghi nhận ----- */
+    --loại trừ trùng ONEBSS - KY LAI HOP DONG GOC voi ONEBSS - NGHIEPVUKHAC
+    delete from ttkd_bsc.ct_bsc_nghiepvu a
+--			select * from ttkd_bsc.ct_bsc_nghiepvu a
+            where TEN_LOAIHD = 'KY LAI HOP DONG GOC' and 'ONEBSS' = loai and a.thang = 202501
+                and exists (select distinct TEN_LOAIHD, loai from  ttkd_bsc.ct_bsc_nghiepvu
+                                    where ten_loaihd != 'KY LAI HOP DONG GOC' and 'ONEBSS' = loai and ma_tb = a.ma_tb and thang = a.thang)
+    ;
+    --loại trừ trùng ONEBSS - THAY THE/THU HOI/CAP BO SUNG VAT TU voi ONEBSS - NGHIEPVUKHAC
+    delete from ttkd_bsc.ct_bsc_nghiepvu a
+--			select * from ttkd_bsc.ct_bsc_nghiepvu a
+            where TEN_LOAIHD = 'THAY THE/THU HOI/CAP BO SUNG VAT TU' and 'ONEBSS' = loai and a.thang = 202501
+                and exists (select distinct TEN_LOAIHD, loai from  ttkd_bsc.ct_bsc_nghiepvu
+                                    where ten_loaihd != 'THAY THE/THU HOI/CAP BO SUNG VAT TU' and 'ONEBSS' = loai and ma_tb = a.ma_tb and thang = a.thang)
+    ;
     --loại trừ trùng ONEBSS - DAT COC MOI voi ONEBSS - LAPDATMOI
     delete from ttkd_bsc.ct_bsc_nghiepvu a
 --			select * from ttkd_bsc.ct_bsc_nghiepvu a
@@ -1013,27 +1058,31 @@ with tmp_nvch as (
 --=== HỆ SỐ QUY ĐỔI THEO ANH NGUYÊN ĐÃ CHỐT VỚI CHỊ TRANG XÃ
 , tmp_qd as (
 	--=== 1:1
-	select loai, ten_loaihd, ma_nv, 1 quydoi
+	select loai, ten_loaihd, ma_nv, 1 sanluong, 1 quydoi
     from tmp_nvch
     where thang = 202501
 		  and ten_loaihd not in ('DK/DC/HUY NGUONG CN','DONG MO DV|0','DONG MO DV|1','THU CUOC','THAY DOI DICH VU','THU KHAC','BIEN DONG KHAC')
 
     --=== CH gom 2 nghiệp vụ DONG MO DV|0, DONG MO DV|1 của cùng thuê bao trong ngày để tính quy đổi
     Union all
-    select loai, ten_loaihd, ma_nv, 1 quydoi															-- 
+    select loai, ten_loaihd, ma_nv, sanluong, 1 quydoi															-- 
 		   --, floor( count(ma_nv)/100)+case when mod(count(ma_nv),100)>0 then 1 else 0 end quydoi		-- CH không làm sĩ lên không chạy đoạn 100
     from (
-            select distinct loai, 'DONG MO DV|0|1'ten_loaihd, ma_nv, ma_kh, ma_tb, to_char(NGAY_DKY_VI,'dd/mm/yyyy')NGAY_DKY_VI
-            from tmp_nvch
-            where thang = 202501 and ten_loaihd in ('DONG MO DV|0','DONG MO DV|1')
+            select loai, 'DONG MO DV|0|1'ten_loaihd, ma_nv, ma_kh, ma_tb, to_char(NGAY_DKY_VI,'dd/mm/yyyy')NGAY_DKY_VI, sum(sanluong)sanluong
+            From (
+                    select loai, ten_loaihd, ma_nv, ma_kh, ma_tb, NGAY_DKY_VI, 1 sanluong
+                    from tmp_nvch
+                    where thang = 202501 and ten_loaihd in ('DONG MO DV|0','DONG MO DV|1')
+                 )
+            Group by loai, ma_nv, ma_kh, ma_tb, NGAY_DKY_VI
          )
-    group by loai, ten_loaihd, ma_nv, ma_kh, ngay_dky_vi
+    group by loai, ten_loaihd, ma_nv, sanluong
 	
 	--=== ĐẾM 1 LẦN TRONG THÁNG
     Union all
-    select loai, ten_loaihd, ma_nv, 1 quydoi
+    select loai, ten_loaihd, ma_nv, sum(sanluong)sanluong, 1 quydoi
     from (
-            select distinct loai, ten_loaihd, ma_nv, ma_kh, ma_tb
+            select distinct loai, ten_loaihd, ma_nv, ma_kh, ma_tb, 1 sanluong
             from tmp_nvch
             where thang = 202501 and ten_loaihd in ('DK/DC/HUY NGUONG CN','THAY DOI DICH VU')
          )
@@ -1041,21 +1090,21 @@ with tmp_nvch as (
 	
     --=== THU CUOC THU KHAC theo 0.25*ma_kh
     Union all
-    select loai, ten_loaihd, ma_nv, count(distinct ma_kh)*0.25 quydoi
+    select loai, ten_loaihd, ma_nv, count(ma_kh)sanluong, count(distinct ma_kh)*0.25 quydoi
     from tmp_nvch
     where thang = 202501 and ten_loaihd in ('THU KHAC', 'THU CUOC')
     group by loai, ten_loaihd, ma_nv
 	
-	    --=== BIEN DONG KHAC theo ma_tb
+	--=== BIEN DONG KHAC theo ma_tb
     Union all
-    select loai, ten_loaihd, ma_nv, count(distinct ma_tb)quydoi
+    select loai, ten_loaihd, ma_nv, count(ma_tb)sanluong, count(distinct ma_tb)quydoi
     from tmp_nvch
     where thang=202501 and ten_loaihd='BIEN DONG KHAC'
     group by loai, ten_loaihd, ma_nv
 )
 --=== LAY THEO sheet DM NGHIEP VU (CH)
 Select a.LOAI, a.TEN_LOAIHD, nv.MA_PB, nv.TEN_PB, nv.MA_TO, nv.TEN_TO, a.MA_NV, nv.TEN_NV, nv.TEN_VTCV
-       , sum(quydoi)quydoi 
+       , sum(sanluong)sanluong, sum(quydoi)quydoi 
        , case when trim(TEN_LOAIHD) in ('KHIEU NAI - HOAN THANH', 'BIEN DONG KHAC', 'TIEP NHAN KHAO SAT DAT MOI', 'TIEP NHAN LAP DAT MOI'
                                          , 'CHUYEN DOI LOAI HINH THUE BAO', 'TAO MOI GOI DA DICH VU', 'THAY DOI GOI DA DICH VU') and loai = 'ONEBSS' then 'DM_KHOAN'
               when trim(TEN_LOAIHD) in ('CAP NHAT DB') and loai = 'CCBS' then 'DM_KHOAN'
@@ -1082,7 +1131,7 @@ Order by a.loai, a.ten_loaihd
 ;
 --=== LAY THEO sheet DM NGHIEP VU_KHOAN
 Select a.LOAI, a.TEN_LOAIHD, nv.MA_PB, nv.TEN_PB, nv.MA_TO, nv.TEN_TO, a.MA_NV, nv.TEN_NV, nv.TEN_VTCV
-       , sum(quydoi)quydoi 
+       , sum(sanluong)sanluong, sum(quydoi)quydoi
        , case when trim(TEN_LOAIHD) in ('KHIEU NAI - HOAN THANH', 'BIEN DONG KHAC', 'TIEP NHAN KHAO SAT DAT MOI', 'TIEP NHAN LAP DAT MOI'
                                          , 'CHUYEN DOI LOAI HINH THUE BAO', 'TAO MOI GOI DA DICH VU', 'THAY DOI GOI DA DICH VU') and loai = 'ONEBSS' then 'DM_KHOAN'
               when trim(TEN_LOAIHD) in ('CAP NHAT DB') and loai = 'CCBS' then 'DM_KHOAN'
@@ -1097,6 +1146,23 @@ Where a.LOAI='ONEBSS' and trim(a.TEN_LOAIHD) in ( 'KHIEU NAI - HOAN THANH', 'BIE
       Or ( a.LOAI='CCBS' and trim(a.TEN_LOAIHD) in ('CAP NHAT DB') )
       Or ( a.LOAI='CCOS' and trim(a.TEN_LOAIHD) in ('KHIEU NAI - DA XU LY') )
 
+Group by a.LOAI, a.TEN_LOAIHD, nv.MA_PB, nv.TEN_PB, nv.MA_TO, nv.TEN_TO, a.MA_NV, nv.TEN_NV, nv.TEN_VTCV
+Order by a.loai, a.ten_loaihd
+;
+--=== LAY THEO sheet DM NGHIEP VU KHÔNG GHI NHẬN - ONBESS
+Select a.LOAI, a.TEN_LOAIHD, nv.MA_PB, nv.TEN_PB, nv.MA_TO, nv.TEN_TO, a.MA_NV, nv.TEN_NV, nv.TEN_VTCV
+       , sum(sanluong)sanluong, sum(quydoi)quydoi
+       , case when trim(TEN_LOAIHD) in ('KHIEU NAI - HOAN THANH', 'BIEN DONG KHAC', 'TIEP NHAN KHAO SAT DAT MOI', 'TIEP NHAN LAP DAT MOI'
+                                         , 'CHUYEN DOI LOAI HINH THUE BAO', 'TAO MOI GOI DA DICH VU', 'THAY DOI GOI DA DICH VU') and loai = 'ONEBSS' then 'DM_KHOAN'
+              when trim(TEN_LOAIHD) in ('CAP NHAT DB') and loai = 'CCBS' then 'DM_KHOAN'
+              when trim(TEN_LOAIHD) in ('KHIEU NAI - DA XU LY') and loai = 'CCOS' then 'DM_KHOAN'
+              when trim(TEN_LOAIHD) in ('LAP DAT MOI - CNTT', 'LAP DAT MOI - CNTTQLDA', 'LAP DAT MOI - BRCD', 'BAN THIET BI') and loai = 'ONEBSS' then 'DM_PTM'
+              when trim(TEN_LOAIHD) in ('HMM TRA SAU') and loai = 'CCBS' then 'DM_PTM'
+			  when trim(TEN_LOAIHD) in ( 'KY LAI HOP DONG GOC','THAY THE/THU HOI/CAP BO SUNG VAT TU','DAT COC MOI','THAY DOI DAT COC' ) and loai = 'ONEBSS' then 'DM_KHONGGHI'
+         else 'DM_HAUMAI' end DANHMUC
+From tmp_qd a
+    Join ttkd_bsc.nhanvien nv on a.ma_nv = nv.ma_nv and nv.thang = 202501
+Where a.LOAI='ONEBSS' and trim(a.TEN_LOAIHD) in ( 'KY LAI HOP DONG GOC','THAY THE/THU HOI/CAP BO SUNG VAT TU','DAT COC MOI','THAY DOI DAT COC' )
 Group by a.LOAI, a.TEN_LOAIHD, nv.MA_PB, nv.TEN_PB, nv.MA_TO, nv.TEN_TO, a.MA_NV, nv.TEN_NV, nv.TEN_VTCV
 Order by a.loai, a.ten_loaihd
 ;
