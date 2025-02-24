@@ -68,7 +68,7 @@ insert into ttkd_bsc.ct_bsc_nghiepvu (THANG, MA_TB, NGAY_DKY_VI, DONVI, MA_NV, T
     ;
 commit ;
 
-/* ------khong ghi nhan------------ UPDATE USSD - DOISIM ------------------- 
+/* ------không ghi nhan------------ UPDATE USSD - DOISIM ------------------- 
 -- thieu thông tin MA_KH, doi tuong KH ?? xu lý trên cùng 1 KH 
 -- SMRS vao mail tap doan, VAO  PHAN TICH -> NHOM BAO CAO DOI SIM 4G -> BC CHI TIET DOI SIM 4G - hh24:mi:ss
 -- File tháng 01/2025 THOI_GIAN_DOI anh Tuyen định dạng dd/mm/yyyy
